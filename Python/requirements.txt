@@ -1,0 +1,8 @@
+ijson
+openai
+sounddevice
+soundfile
+keyboard
+pydub
+pyserial
+numpy
