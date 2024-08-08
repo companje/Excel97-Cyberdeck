@@ -1,73 +1,50 @@
-#!/usr/bin/env python3
+import queue,sys,os,ijson,json
+import sounddevice as sd
+import soundfile as sf
+import numpy  # Make sure NumPy is loaded before it is used in the callback
+assert numpy  # avoid "imported but unused" message (W0611)
+from openai import OpenAI
+from pydub import AudioSegment
+from network_module import *
 
-# from openai import OpenAI
-#from record_audio import *
-# import whisper
-# from chat_module import *
-# from network_module import *
-# import sys,os,time,json,openai,ijson,socket
-# import argparse
-import sys
-from SerialReader import SerialReader
-# from AudioRecorder import AudioRecorder
+IP = "192.168.1.109" # Huis
 
-serial_reader = SerialReader('/dev/tty.usbmodem101', 9600)
-serial_reader.start_reading()
+client = OpenAI()
 
-# client = OpenAI()   #   sudo --preserve-env ./cyberdeck-cli.py
+def convert_wav_to_mp3(wav_filename, mp3_filename):
+    audio = AudioSegment.from_wav(wav_filename)
+    audio.export(mp3_filename, format="mp3")
 
-# controls = SerialReader()
-# reader = SerialReader('COM3', 115200)
-# reader.start()
+def process_audio_commands():
+    q = queue.Queue()
 
-# audio = AudioRecorder()
+    def callback(indata, frames, time, status):
+        """This is called (from a separate thread) for each audio block."""
+        if status:
+            print(status, file=sys.stderr)
+        q.put(indata.copy())
 
-# try:
-#     while True:
+    device_info = sd.query_devices(None, 'input')
+    samplerate = int(device_info['default_samplerate'])
+    filename = "output.wav"
+    channels = 1
 
-#         if not audio.is_recording and reader.is_talking:
-#             audio.start()
-            
-#         # print(".",end="",flush=True)
-#         print(reader.is_talking)
-#         time.sleep(.01)
+    with sf.SoundFile(filename, mode='w', samplerate=samplerate, channels=channels, subtype=None) as file:
+        with sd.InputStream(samplerate=samplerate, device=None,  channels=channels, callback=callback):
+            print('Recording...')
+            while True:
+                file.write(q.get())
 
-# except KeyboardInterrupt:
-#     print("Stopping...")
-#     reader.stop()
+                if not os.path.exists('is_recording.tmp'):
+                    print('Recording Finished')
+                    break
 
+    convert_wav_to_mp3("output.wav","output.mp3")
 
-print("end")
-sys.exit()
-
-IP = "192.168.0.104" # TUINHUISJE
-# IP = "10.0.2.15"
-# IP = "172.16.88.35" # @ SETUP
-
-while True:
-
-
-    audio = record_audio()
-    wav_filename = "tmp.wav"
-    mp3_filename = "tmp.mp3"
-    save_to_wav(audio, wav_filename)
-    convert_wav_to_mp3(wav_filename, mp3_filename)
-
-    audio_file = open("tmp.mp3", "rb")
-    
-    filesize = os.path.getsize("tmp.mp3")
-
-    if filesize < 10000:
-        print("skip")
-        continue
-    
-    try:
-        transcription = client.audio.transcriptions.create(model="whisper-1", file=audio_file)
+    with open("output.mp3", "rb") as file:
+        transcription = client.audio.transcriptions.create(model="whisper-1", file=file)
         print(transcription.text)
 
-        continue
-
-        # history = chat(transcription.text)
         response = client.chat.completions.create(
             model='gpt-3.5-turbo',
             response_format={ "type": "json_object" },
@@ -78,7 +55,6 @@ while True:
             temperature=0,
             stream=True
         )
-
 
         events = ijson.sendable_list()
         coro = ijson.items_coro(events, "items.item")
@@ -100,24 +76,19 @@ while True:
                         
                 
 
-        # if len(history)>1:
-        #     message = history[-1] # alleen de laatste response versturen.
-        #     cmd = message["content"]
-        #     print("verstuur naar Cyberdeck:", cmd)
 
-        #     send_udp_message(cmd, "192.168.0.104", 9999)
-    
+
+if __name__ == "__main__":
+    print("Cyberdeck-cli: druk op de rode knop en geef spraakcommando's")
+    try:
+        while True:
+            if os.path.exists('is_recording.tmp'):
+                process_audio_commands()
+            else:
+                sd.sleep(100)
+
+    except KeyboardInterrupt:
+        print('\rBreak')
+
     except Exception as e:
-        print(e)
-
-    # print("commando aan ChatGPT: ",result["text"])
-
-
-#     print("result:",history)
-
-#     if len(history)>1:
-#         message = history[-1] # alleen de laatste response versturen.
-# # for message in history:
-# #     if message["role"]=="assistant":
-#         print("verstuur naar Cyberdeck:", message["content"])
-
+        print("Error",e)

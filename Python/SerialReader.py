@@ -8,18 +8,19 @@ class SerialReader:
         self.baudrate = baudrate
         self.ser = serial.Serial(port, baudrate)
         self.filename = 'is_recording.tmp'
+        self.last_message = ''
 
     def start_reading(self):
         try:
             while True:
                 while self.ser.in_waiting:
                     value = self.ser.readline().decode('utf-8').strip()
+                    
+                    self.last_message = value
+                    
                     print(value)
 
-                    if len(value) > 15:
-                        value = value[15]
-
-                    if value == 'T':
+                    if 'T' in value:
                         open(self.filename, 'w').close()  # Create the file
                     else:
                         if os.path.exists(self.filename):
