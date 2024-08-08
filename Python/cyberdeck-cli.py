@@ -7,31 +7,34 @@
 # from network_module import *
 # import sys,os,time,json,openai,ijson,socket
 # import argparse
-import time,sys
+import sys
 from SerialReader import SerialReader
-from AudioRecorder import AudioRecorder
+# from AudioRecorder import AudioRecorder
+
+serial_reader = SerialReader('/dev/tty.usbmodem101', 9600)
+serial_reader.start_reading()
 
 # client = OpenAI()   #   sudo --preserve-env ./cyberdeck-cli.py
 
 # controls = SerialReader()
-reader = SerialReader('COM3', 115200)
-reader.start()
+# reader = SerialReader('COM3', 115200)
+# reader.start()
 
-audio = AudioRecorder()
+# audio = AudioRecorder()
 
-try:
-    while True:
+# try:
+#     while True:
 
-        if not audio.is_recording and reader.is_talking:
-            audio.start()
+#         if not audio.is_recording and reader.is_talking:
+#             audio.start()
             
-        # print(".",end="",flush=True)
-        print(reader.is_talking)
-        time.sleep(.01)
+#         # print(".",end="",flush=True)
+#         print(reader.is_talking)
+#         time.sleep(.01)
 
-except KeyboardInterrupt:
-    print("Stopping...")
-    reader.stop()
+# except KeyboardInterrupt:
+#     print("Stopping...")
+#     reader.stop()
 
 
 print("end")

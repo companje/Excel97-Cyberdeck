@@ -1,36 +1,36 @@
 import serial
-import threading
+import os
 import time
 
 class SerialReader:
-    def __init__(self, port, baudrate):
+    def __init__(self, port, baudrate=115200):
+        self.port = port
+        self.baudrate = baudrate
         self.ser = serial.Serial(port, baudrate)
-        self.is_talking = False
-        self.running = False
-        self.thread = threading.Thread(target=self._background_task)
+        self.filename = 'is_recording.tmp'
 
-    def start(self):
-        self.running = True
-        self.thread.start()
-
-    def stop(self):
-        self.running = False
-        self.thread.join()
-
-    def _background_task(self):
-        while self.running:
-            self.update()
-            time.sleep(0.1)  # Even pauzeren om CPU-gebruik te minimaliseren
-
-    def update(self):
+    def start_reading(self):
         try:
-            line = self.ser.readline().decode('utf-8').strip()
-            if len(line)<24:
-                return
-            
-            self.is_talking = line[15] != "."
+            while True:
+                while self.ser.in_waiting:
+                    value = self.ser.readline().decode('utf-8').strip()
+                    print(value)
+
+                    if len(value) > 15:
+                        value = value[15]
+
+                    if value == 'T':
+                        open(self.filename, 'w').close()  # Create the file
+                    else:
+                        if os.path.exists(self.filename):
+                            os.remove(self.filename)  # Delete the file
+
+                time.sleep(0.1)  # Prevent high CPU usage
         except Exception as e:
-            print(f"Error reading line: {e}")
-            return
-        
-        
+            print(f"Serial reading error: {e}")
+        finally:
+            self.ser.close()
+
+if __name__ == "__main__":
+    serial_reader = SerialReader('/dev/tty.usbmodem101', 9600)
+    serial_reader.start_reading()

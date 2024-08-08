@@ -24,7 +24,7 @@ class MyHandler(PatternMatchingEventHandler):
             self.start_process(script_name)
 
 if __name__ == "__main__":
-    scripts_to_watch = ['cyberdeck-cli.py', 'arduino.py']
+    scripts_to_watch = ['RecTest.py']
     event_handler = MyHandler(scripts_to_watch)
     observer = Observer()
     observer.schedule(event_handler, path='.', recursive=False)
