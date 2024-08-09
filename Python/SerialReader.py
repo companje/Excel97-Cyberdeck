@@ -33,5 +33,6 @@ class SerialReader:
             self.ser.close()
 
 if __name__ == "__main__":
-    serial_reader = SerialReader('/dev/tty.usbmodem101', 9600)
+    serial_reader = SerialReader('COM3', 115200) #'/dev/tty.usbmodem101'
+    time.sleep(1)
     serial_reader.start_reading()

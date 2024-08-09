@@ -1,12 +1,12 @@
-const int BTN_1=17;
-const int BTN_2=6;
-const int LAMP_TALK=2;
-const int POT=A0;
-const int H_SLIDER=A1;
-const int V_SLIDER=A2;
+const int BTN_1 = 17;
+const int BTN_2 = 6;
+const int LAMP_TALK = 2;
+const int POT = A0;
+const int H_SLIDER = A1;
+const int V_SLIDER = A2;
 
 struct Button {
-  char pin,name;
+  char pin, name;
   bool pressed;
 };
 
@@ -29,7 +29,7 @@ Button btn_talk = { 18, 'T', false };
 Button enc_1a = { 44, '{', false };
 Button enc_1b = { 42, '}', false };
 
-Button all_buttons[] = {btn_1, btn_2, btn_3, btn_4, btn_5, btn_6, btn_black, btn_green, btn_red, clr_red, clr_green, clr_blue, clr_yellow, clr_black, clr_white, btn_talk, enc_1a, enc_1b };
+Button* all_buttons[] = { &btn_1, &btn_2, &btn_3, &btn_4, &btn_5, &btn_6, &btn_black, &btn_green, &btn_red, &clr_red, &clr_green, &clr_blue, &clr_yellow, &clr_black, &clr_white, &btn_talk, &enc_1a, &enc_1b };
 
 int nButtons = 18;
 int timeBtnTalk = 0;
@@ -37,8 +37,8 @@ bool sleep = true;
 
 void setup() {
 
-  for (int i=0; i<nButtons; i++) {
-    pinMode(all_buttons[i].pin,INPUT_PULLUP);
+  for (int i = 0; i < nButtons; i++) {
+    pinMode((*all_buttons[i]).pin, INPUT_PULLUP);
   }
   Serial.begin(115200);
 
@@ -46,29 +46,30 @@ void setup() {
 }
 
 void loop() {
-    for (int i=0; i<nButtons; i++) {
-      bool v = all_buttons[i].pressed = !digitalRead(all_buttons[i].pin);
-      Serial.print(v?all_buttons[i].name:'.');
-    }
+  for (int i = 0; i < nButtons; i++) {
+    (*all_buttons[i]).pressed = !digitalRead((*all_buttons[i]).pin);
+    Serial.print((*all_buttons[i]).pressed ? (*all_buttons[i]).name : '.');
+  }
 
-    Serial.print(" ");
-    Serial.print(analogRead(POT));
-    Serial.print(" ");
-    Serial.print(analogRead(H_SLIDER));
-    Serial.print(" ");
-    Serial.print(analogRead(V_SLIDER));
-    Serial.println();
+  Serial.print(" ");
+  Serial.print(analogRead(POT));
+  Serial.print(" ");
+  Serial.print(analogRead(H_SLIDER));
+  Serial.print(" ");
+  Serial.print(analogRead(V_SLIDER));
+  Serial.println();
 
-    float a = (sin(millis()/300.) + 1)/2 * 200 + 55;
+  float a = (sin(millis() / 300.) + 1) / 2 * 200 + 55;
 
-    if (btn_talk.pressed) timeBtnTalk = millis();
+  if (btn_talk.pressed) {
+    timeBtnTalk = millis();
+  }
 
-    sleep = millis()-timeBtnTalk>2000;
+  sleep = millis() - timeBtnTalk > 2000;
 
-    int brightness = btn_talk.pressed ? 255 : sleep ? a : 0; 
+  int brightness = btn_talk.pressed ? 255 : sleep ? a : 0;
 
-//    analogWrite(LAMP_TALK, brightness);
+  analogWrite(LAMP_TALK, brightness);
 
-    delay(10);
-    
+  delay(10);
 }
