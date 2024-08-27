@@ -1,3 +1,5 @@
+#include "Encoder.h"
+
 const int BTN_1 = 17;
 const int BTN_2 = 6;
 const int LAMP_TALK = 2;
@@ -26,12 +28,15 @@ Button clr_green = { 9, 'G', false };
 Button clr_red = { 16, 'R', false };
 Button clr_yellow = { 5, 'Y', false };
 Button btn_talk = { 18, 'T', false };
-Button enc_1a = { 44, '{', false };
-Button enc_1b = { 42, '}', false };
 
-Button* all_buttons[] = { &btn_1, &btn_2, &btn_3, &btn_4, &btn_5, &btn_6, &btn_black, &btn_green, &btn_red, &clr_red, &clr_green, &clr_blue, &clr_yellow, &clr_black, &clr_white, &btn_talk, &enc_1a, &enc_1b };
+Encoder wheel(44,42);
 
-int nButtons = 18;
+// Button enc_1a = { 44, '{', false };
+// Button enc_1b = { 42, '}', false };
+
+Button* all_buttons[] = { &btn_1, &btn_2, &btn_3, &btn_4, &btn_5, &btn_6, &btn_black, &btn_green, &btn_red, &clr_red, &clr_green, &clr_blue, &clr_yellow, &clr_black, &clr_white, &btn_talk };
+
+int nButtons = 16;
 int timeBtnTalk = 0;
 bool sleep = true;
 
@@ -46,6 +51,8 @@ void setup() {
 }
 
 void loop() {
+  wheel.update();
+
   for (int i = 0; i < nButtons; i++) {
     (*all_buttons[i]).pressed = !digitalRead((*all_buttons[i]).pin);
     Serial.print((*all_buttons[i]).pressed ? (*all_buttons[i]).name : '.');
@@ -57,6 +64,8 @@ void loop() {
   Serial.print(analogRead(H_SLIDER));
   Serial.print(" ");
   Serial.print(analogRead(V_SLIDER));
+  Serial.print(" ");
+  Serial.print(wheel.value);
   Serial.println();
 
   float a = (sin(millis() / 300.) + 1) / 2 * 200 + 55;

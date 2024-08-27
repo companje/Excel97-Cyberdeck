@@ -1,6 +1,7 @@
 import serial
 import os
 import time
+from network_module import *
 
 class SerialReader:
     def __init__(self, port, baudrate=115200):
@@ -18,7 +19,11 @@ class SerialReader:
                     
                     self.last_message = value
                     
-                    print(value)
+                    # print(value)                    
+
+                    print(value.split(" "))
+                    
+                    #send_udp_message(json.dumps({"data":"test"}), "127.0.0.1", 9998)
 
                     if 'T' in value:
                         open(self.filename, 'w').close()  # Create the file
