@@ -6,9 +6,12 @@ assert numpy  # avoid "imported but unused" message (W0611)
 from openai import OpenAI
 from pydub import AudioSegment
 from network_module import *
+from ConsoleWindow import *
 
 #IP = "192.168.1.109" # Huis
 IP = "127.0.0.1"
+
+move_console_window(1500, 0)
 
 client = OpenAI()
 

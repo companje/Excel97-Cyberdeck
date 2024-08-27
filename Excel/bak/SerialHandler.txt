@@ -1,0 +1,115 @@
+Dim WithEvents MSComm1 As MSComm
+
+Private selecting As Boolean
+
+
+Private Sub Class_Initialize()
+    MsgBox ("Hi Serial")
+    
+    On Error GoTo onError
+    If MSComm1 Is Nothing Then
+        Set MSComm1 = New MSComm
+    End If
+    
+    With MSComm1
+        .CommPort = 7
+        .InputLen = 0
+        .RThreshold = 1
+        .Settings = "9600,N,8,1"
+        .PortOpen = True
+    End With
+    
+    Exit Sub
+    
+onError:
+    MsgBox ("Error: " & Err.Description)
+End Sub
+
+Private Sub MSComm1_OnComm()
+    Dim Buffer As String
+    
+    If MSComm1.CommEvent = comEvReceive Then
+        Buffer = MSComm1.Input
+        
+        If Buffer = "e" Then
+            selecting = True
+        ElseIf Buffer = "E" Then
+            selecting = False
+        ElseIf Buffer = "c" Then
+            go_left
+        ElseIf Buffer = "a" Then
+            go_up
+        ElseIf Buffer = "d" Then
+            go_right
+        ElseIf Buffer = "b" Then
+            go_down
+        End If
+        
+        ' Place the data in a cell
+        'Sheets("Sheet1").range("A1").value = Buffer
+    End If
+End Sub
+
+Sub go_left()
+    If Not Selection Is Nothing Then
+        If Selection.Cells.Count > 0 Then
+            If Selection.Column > 1 Then
+                If selecting Then
+                    Dim growSelect As range
+                    Set growSelect = range(Selection, Selection.Offset(0, -1))
+                    growSelect.Select
+                Else
+                    Selection.Offset(0, -1).Select
+                End If
+            End If
+        End If
+    End If
+End Sub
+
+Sub go_right()
+    If Not Selection Is Nothing Then
+        If Selection.Cells.Count > 0 Then
+            'If Selection.Column > 1 Then
+                If selecting Then
+                    Dim growSelect As range
+                    Set growSelect = range(Selection, Selection.Offset(0, 1))
+                    growSelect.Select
+                Else
+                    Selection.Offset(0, 1).Select
+                End If
+            'End If
+        End If
+    End If
+End Sub
+
+Sub go_up()
+    If Not Selection Is Nothing Then
+        If Selection.Cells.Count > 0 Then
+            If Selection.Row > 1 Then
+                If selecting Then
+                    Dim growSelect As range
+                    Set growSelect = range(Selection, Selection.Offset(-1, 0))
+                    growSelect.Select
+                Else
+                    Selection.Offset(-1, 0).Select
+                End If
+            End If
+        End If
+    End If
+End Sub
+
+Sub go_down()
+    If Not Selection Is Nothing Then
+        If Selection.Cells.Count > 0 Then
+            If selecting Then
+                Dim growSelect As range
+                Set growSelect = range(Selection, Selection.Offset(1, 0))
+                growSelect.Select
+            Else
+                Selection.Offset(1, 0).Select
+            End If
+        End If
+    End If
+End Sub
+
+
