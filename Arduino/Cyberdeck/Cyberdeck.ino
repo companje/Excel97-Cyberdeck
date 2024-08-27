@@ -29,7 +29,7 @@ Button clr_red = { 16, 'R', false };
 Button clr_yellow = { 5, 'Y', false };
 Button btn_talk = { 18, 'T', false };
 
-Encoder wheel(44,42);
+Encoder wheel(22,24);
 
 // Button enc_1a = { 44, '{', false };
 // Button enc_1b = { 42, '}', false };
@@ -39,6 +39,7 @@ Button* all_buttons[] = { &btn_1, &btn_2, &btn_3, &btn_4, &btn_5, &btn_6, &btn_b
 int nButtons = 16;
 int timeBtnTalk = 0;
 bool sleep = true;
+unsigned long pTime = 0;
 
 void setup() {
 
@@ -52,6 +53,9 @@ void setup() {
 
 void loop() {
   wheel.update();
+
+  if (millis()-pTime<30) return;
+  pTime = millis();
 
   for (int i = 0; i < nButtons; i++) {
     (*all_buttons[i]).pressed = !digitalRead((*all_buttons[i]).pin);
@@ -79,6 +83,4 @@ void loop() {
   int brightness = btn_talk.pressed ? 255 : sleep ? a : 0;
 
   analogWrite(LAMP_TALK, brightness);
-
-  delay(10);
 }
