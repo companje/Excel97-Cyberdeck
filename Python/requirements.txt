@@ -6,3 +6,4 @@ keyboard
 pydub
 pyserial
 numpy
+scipy

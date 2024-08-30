@@ -82,5 +82,5 @@ void loop() {
 
   int brightness = btn_talk.pressed ? 255 : sleep ? a : 0;
 
-  analogWrite(LAMP_TALK, brightness);
+  // analogWrite(LAMP_TALK, brightness);
 }
