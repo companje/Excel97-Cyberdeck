@@ -7,3 +7,4 @@ pydub
 pyserial
 numpy
 scipy
+pyautogui
