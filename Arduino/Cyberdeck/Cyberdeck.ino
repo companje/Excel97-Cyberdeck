@@ -28,15 +28,16 @@ Button clr_green = { 9, 'G', false };
 Button clr_red = { 16, 'R', false };
 Button clr_yellow = { 5, 'Y', false };
 Button btn_talk = { 18, 'T', false };
+Button btn_yellow_print = { 34, 'P', false };
+Button btn_red_llm = { 32, 'L', false };
 
 Encoder wheel(22,24);
 
-// Button enc_1a = { 44, '{', false };
-// Button enc_1b = { 42, '}', false };
+Encoder wheel2(36,38); //field selector
 
-Button* all_buttons[] = { &btn_1, &btn_2, &btn_3, &btn_4, &btn_5, &btn_6, &btn_black, &btn_green, &btn_red, &clr_red, &clr_green, &clr_blue, &clr_yellow, &clr_black, &clr_white, &btn_talk };
+Button* all_buttons[] = { &btn_1, &btn_2, &btn_3, &btn_4, &btn_5, &btn_6, &btn_black, &btn_green, &btn_red, &clr_red, &clr_green, &clr_blue, &clr_yellow, &clr_black, &clr_white, &btn_talk, &btn_yellow_print, &btn_red_llm };
 
-int nButtons = 16;
+int nButtons = 18;
 int timeBtnTalk = 0;
 bool sleep = true;
 unsigned long pTime = 0;
@@ -53,6 +54,7 @@ void setup() {
 
 void loop() {
   wheel.update();
+  wheel2.update();
 
   if (millis()-pTime<30) return;
   pTime = millis();
@@ -70,6 +72,8 @@ void loop() {
   Serial.print(analogRead(V_SLIDER));
   Serial.print(" ");
   Serial.print(wheel.value);
+  Serial.print(" ");
+  Serial.print(wheel2.value);
   Serial.println();
 
   float a = (sin(millis() / 300.) + 1) / 2 * 200 + 55;
