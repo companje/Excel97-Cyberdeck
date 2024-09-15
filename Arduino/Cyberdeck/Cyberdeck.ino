@@ -31,7 +31,8 @@ Button btn_talk = { 18, 'T', false };
 Button btn_yellow_print = { 34, 'P', false };
 Button btn_red_llm = { 32, 'L', false };
 
-Encoder wheel(22,24);
+// Encoder wheel(22,24);
+Encoder wheel(44,46);
 
 Encoder wheel2(36,38); //field selector
 
