@@ -8,6 +8,11 @@ import pygetwindow as gw
 from datetime import datetime
 import pyautogui
 
+def map_value(value, in_min, in_max, out_min, out_max, clamp=True):
+    if clamp:
+        value = max(min(value, in_max), in_min)
+    return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+
 
 class SerialReader:
     def __init__(self, port, baudrate=115200):
@@ -20,6 +25,7 @@ class SerialReader:
         self.prev_print_time = 0
         self.prev_btw_time = 0
         self.prev_buttons = ""
+        self.prev_hslider = None
 
         # self.ser.flush()
 
@@ -39,7 +45,6 @@ class SerialReader:
         while True:
             while self.ser.in_waiting:
                 
-                
                 try:
                     value = self.ser.readline().decode('utf-8').strip()
                 except:
@@ -54,6 +59,16 @@ class SerialReader:
 
                 if len(values)!=6:
                     continue
+
+                # goto column
+                hslider = int(map_value(int(values[2]),0,990,7.999,0))
+                if self.prev_hslider == None:
+                    self.prev_hslider = hslider
+                
+                if hslider!=self.prev_hslider:
+                    print(hslider)
+                    col = "ABCDEFGH"[hslider]
+                    send_udp_message(json.dumps({"action":"gotoColumn","value": col}), "127.0.0.1", 9999)
 
                 buttons = values[0]
 
@@ -97,7 +112,7 @@ class SerialReader:
                     fields.append(f"B{23+i}")
                     fields.append(f"H{23+i}")
                 
-                field_index = int(values[5])//2 % len(fields)
+                field_index = len(fields)-1 - int(values[5])//2 % len(fields)
                 
                 field = fields[field_index]
 
@@ -138,7 +153,7 @@ class SerialReader:
                     print("PRINT")
                     self.prev_print_time = time.time()
                     if os.path.exists("D:"):
-                        filename = datetime.now().strftime("%Y-%m-%d-%H.%M")
+                        filename = datetime.now().strftime("%Y-%m-%d-%H.%M.%S")
                         send_udp_message(json.dumps( {"action":"saveCopyAndPrint", "value":filename + ".xls"}), "127.0.0.1", 9999)
                         time.sleep(1)
                         
@@ -155,10 +170,9 @@ class SerialReader:
                         else:
                             print("Save Print Output As window niet gevonden")
                     else:
-                        send_udp_message(json.dumps( {"action":"showMessage", "message": "USB stick niet gevonden. Is deze wel ingeplugd?"}), "127.0.0.1", 9999)
+                        send_udp_message(json.dumps( {"action":"playAudio", "value": "usb-drive-not-found.wav"}), "127.0.0.1", 9999)
 
-                #if ('k' in value or 'g' in value or 'r' in value) and time.time()-prev_btw_time>: # BTW
-
+                # BTW
                 for letter, nummer in zip(['k','g','r'], [0,9,21]):
                     if letter in buttons and not letter in self.prev_buttons:
                         send_udp_message(json.dumps( {"action":"playAudio", "value": "money.wav"}), "127.0.0.1", 9999)
@@ -169,10 +183,17 @@ class SerialReader:
                         
                         print(nummer)
 
+                # clear cell with RED happy button
+                if 'R' in buttons and 'R' not in self.prev_buttons:
+                    send_udp_message(json.dumps( {"action":"clear" }), "127.0.0.1", 9999)
+
+
 
             time.sleep(.1)  # Prevent high CPU usage
-            prev_values = values
+            self.prev_values = values
             self.prev_buttons = buttons
+            self.prev_hslider = hslider
+
 
         # except Exception as e:
         #     print(f"Serial reading error: {e}")
