@@ -5,7 +5,6 @@ def send_udp_message(message, ip, port):
     
     print(message)
 
-
     try:
         print(json.dumps(json.loads(message),indent=2))
         try:

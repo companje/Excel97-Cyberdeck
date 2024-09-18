@@ -13,6 +13,8 @@ def map_value(value, in_min, in_max, out_min, out_max, clamp=True):
         value = max(min(value, in_max), in_min)
     return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
+def play(filename_base):
+    send_udp_message(json.dumps({"action":"playAudio","value":f"{filename_base}.wav"}), "127.0.0.1", 9999)           
 
 class SerialReader:
     def __init__(self, port, baudrate=115200):
@@ -26,6 +28,8 @@ class SerialReader:
         self.prev_btw_time = 0
         self.prev_buttons = ""
         self.prev_hslider = None
+        self.prev_vslider = None
+
 
         # self.ser.flush()
 
@@ -38,8 +42,8 @@ class SerialReader:
         sensor_index_field = 1
         sensor_index_encoder = 4
         p_encoder_value = -9999
-        p_field = ""
-        p_num_rows = num_rows = 1
+        p_field = None
+        p_num_rows = None
 
         # try:
         while True:
@@ -60,51 +64,58 @@ class SerialReader:
                 if len(values)!=6:
                     continue
 
-                # goto column
-                hslider = int(map_value(int(values[2]),0,990,7.999,0))
-                if self.prev_hslider == None:
-                    self.prev_hslider = hslider
-                
-                if hslider!=self.prev_hslider:
-                    print(hslider)
-                    col = "ABCDEFGH"[hslider]
-                    send_udp_message(json.dumps({"action":"gotoColumn","value": col}), "127.0.0.1", 9999)
-
                 buttons = values[0]
 
+                # print("len buttons",len(buttons))
+                if len(buttons)!=18:
+                    print("invalid serial input for buttons")
+                    continue
+
                 if self.prev_buttons=="":
+                    print("buttons",buttons)
                     self.prev_buttons = buttons
                 
+                num_rows = -1
                 for i in range(1,7):
                     if str(i) in buttons:
                         num_rows = i
                         break
 
-                if p_num_rows!=num_rows:
-                    field_range = ""
-                    if num_rows == 6:
-                        print("niks wissen")
-                        send_udp_message(json.dumps({"action":"select","range":"B28","value":""}), "127.0.0.1", 9999)
-                    elif num_rows == 5:
-                        field_range = "B28:H28"
-                        send_udp_message(json.dumps({"action":"select","range":"B27","value":""}), "127.0.0.1", 9999)
-                    elif num_rows == 4:
-                        field_range = "B27:H28"
-                        send_udp_message(json.dumps({"action":"select","range":"B26","value":""}), "127.0.0.1", 9999)
-                    elif num_rows == 3:
-                        field_range = "B26:H28"
-                        send_udp_message(json.dumps({"action":"select","range":"B25","value":""}), "127.0.0.1", 9999)
-                    elif num_rows == 2:
-                        field_range = "B25:H28"
-                        send_udp_message(json.dumps({"action":"select","range":"B24","value":""}), "127.0.0.1", 9999)
-                    elif num_rows == 1:
-                        field_range = "B24:H28"
-                        send_udp_message(json.dumps({"action":"select","range":"B23","value":""}), "127.0.0.1", 9999)
-                    
-                    if field_range:
-                        send_udp_message(json.dumps({"action":"setValue","range":field_range,"value":""}), "127.0.0.1", 9999)
+                if num_rows>-1:
 
-                    p_num_rows = num_rows
+                    if p_num_rows == None:
+                        p_num_rows = num_rows
+
+                    if p_num_rows!=num_rows:
+                        print("num_rows",num_rows)
+                        field_range = ""
+                        if num_rows == 6:
+                            print("niks wissen")
+                            #send_udp_message(json.dumps({"action":"select","range":"B28","value":""}), "127.0.0.1", 9999)
+                        elif num_rows == 5:
+                            field_range = "B28:H28"
+                            #send_udp_message(json.dumps({"action":"select","range":"B27","value":""}), "127.0.0.1", 9999)
+                        elif num_rows == 4:
+                            field_range = "B27:H28"
+                            #send_udp_message(json.dumps({"action":"select","range":"B26","value":""}), "127.0.0.1", 9999)
+                        elif num_rows == 3:
+                            field_range = "B26:H28"
+                            #send_udp_message(json.dumps({"action":"select","range":"B25","value":""}), "127.0.0.1", 9999)
+                        elif num_rows == 2:
+                            field_range = "B25:H28"
+                            #send_udp_message(json.dumps({"action":"select","range":"B24","value":""}), "127.0.0.1", 9999)
+                        elif num_rows == 1:
+                            field_range = "B24:H28"
+                            #send_udp_message(json.dumps({"action":"select","range":"B23","value":""}), "127.0.0.1", 9999)
+                        
+                        if field_range:
+                            send_udp_message(json.dumps({"action":"setValue","range":field_range,"value":""}), "127.0.0.1", 9999)
+
+                        play(str(num_rows))
+
+                        p_num_rows = num_rows
+
+                        continue # check me
                 
                                 
                 fields = ["B6","B7","B8", "B9", "C13", "C14", "C15", "C16", "C17"]
@@ -115,8 +126,11 @@ class SerialReader:
                 field_index = len(fields)-1 - int(values[5])//2 % len(fields)
                 
                 field = fields[field_index]
+                if p_field == None:
+                    p_field = field
 
                 if field!=p_field:
+                    print("field",field, p_field)
                     data = {"action":"select","range":field}
                     send_udp_message(json.dumps(data), "127.0.0.1", 9999)
                     p_field = field
@@ -185,15 +199,66 @@ class SerialReader:
 
                 # clear cell with RED happy button
                 if 'R' in buttons and 'R' not in self.prev_buttons:
+                    print("buttons, self.prev_buttons", buttons, self.prev_buttons)
                     send_udp_message(json.dumps( {"action":"clear" }), "127.0.0.1", 9999)
+                    play("feel")
+            
+                # green happy button
+                if 'G' in buttons and 'G' not in self.prev_buttons:
+                    play("melody/0")
 
+                # black happy button
+                if 'B' in buttons and 'B' not in self.prev_buttons:
+                    play("melody/1")
 
+                # black happy button
+                if 'Y' in buttons and 'Y' not in self.prev_buttons:
+                    play("melody/2")
 
+                # black happy button
+                if 'K' in buttons and 'K' not in self.prev_buttons:
+                    play("melody/3")
+            
+                # white happy button DOWN
+                if 'W' in buttons and 'W' not in self.prev_buttons:
+                    play("rick")
+                if not 'W' in buttons and 'W' in self.prev_buttons:
+                    send_udp_message(json.dumps({"action":"stopAudio"}), "127.0.0.1", 9999)
+
+                # goto column
+                hslider = int(map_value(int(values[2]),0,990,7.999,1))
+                if self.prev_hslider == None:
+                    self.prev_hslider = hslider
+                
+                if hslider!=self.prev_hslider:
+                    print(hslider)
+                    col = "ABCDEFGH"[hslider]
+                    if 'Y' in buttons: # only when YELLOW is down the hslider and vslider are enabled
+                        send_udp_message(json.dumps({"action":"gotoColumn","value": col}), "127.0.0.1", 9999)
+                    elif abs(hslider-self.prev_hslider)>1:
+                        send_udp_message(json.dumps({"action":"playAudio","value": "scroll-disabled.wav"}), "127.0.0.1", 9999)
+
+                # goto row
+                vslider = int(map_value(int(values[3]),0,1024,38,6))
+                if self.prev_vslider == None:
+                    self.prev_vslider = vslider
+                
+                if vslider!=self.prev_vslider:
+                    if 'Y' in buttons: # only when YELLOW is down the hslider and vslider are enabled
+                        send_udp_message(json.dumps({"action":"gotoRow","value": vslider}), "127.0.0.1", 9999)
+                    elif abs(vslider-self.prev_vslider)>1:
+                        send_udp_message(json.dumps({"action":"playAudio","value": "scroll-disabled.wav"}), "127.0.0.1", 9999)
+                    
+
+                # this is still in the serial available loop
+                self.prev_values = values
+                self.prev_buttons = buttons
+                self.prev_hslider = hslider
+                self.prev_vslider = vslider
+
+            # this is at the end of the current cycle ('update function')
             time.sleep(.1)  # Prevent high CPU usage
-            self.prev_values = values
-            self.prev_buttons = buttons
-            self.prev_hslider = hslider
-
+            
 
         # except Exception as e:
         #     print(f"Serial reading error: {e}")

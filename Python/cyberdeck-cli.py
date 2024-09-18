@@ -55,6 +55,8 @@ def process_audio_commands():
             # if not use_gpt send transcription as cell value
             data = { "action":"setValue", "value":transcription.text }
             send_udp_message(json.dumps(data), IP, 9999)
+            data = { "action":"playAudio", "value": "blooip-short.wav" }
+            send_udp_message(json.dumps(data), IP, 9999)
         else:
             # use gpt to understand transcription
             response = client.chat.completions.create(
