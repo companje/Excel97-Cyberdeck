@@ -1,12 +1,26 @@
 from network_module import *
-#import pyautogui
+import pyautogui
 import time
-import keyboard
+# import keyboard
+import pygetwindow as gw
+from datetime import datetime
 
-time.sleep(10)
+time.sleep(1)
 print("nu")
-send_udp_message(json.dumps({"action":"printToPDF"}), "127.0.0.1", 9999)
 
-time.sleep(2)
-keyboard.write('test.pdf')
-#pyautogui.press('enter')
+window = gw.getWindowsWithTitle('Microsoft Excel - cyberdeck.xls')[0]
+
+filename = datetime.now().strftime("%Y-%m-%d-%H.%M.pdf")
+
+send_udp_message(json.dumps( {"action":"printToPDF", "value": filename}), "127.0.0.1", 9999)
+
+if window:
+    window.activate()
+
+time.sleep(.1)
+pyautogui.write("D:")
+pyautogui.press('enter')
+time.sleep(.3)
+pyautogui.write(filename)
+time.sleep(.3)
+pyautogui.press('enter')

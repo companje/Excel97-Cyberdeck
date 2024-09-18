@@ -2,12 +2,12 @@ import serial
 import os
 import time
 from network_module import *
-from scipy.signal import savgol_filter
+#from scipy.signal import savgol_filter
 from collections import deque
+import pygetwindow as gw
+from datetime import datetime
+import pyautogui
 
-window_size = 25
-poly_order = 2
-data_window = deque(maxlen=window_size)
 
 class SerialReader:
     def __init__(self, port, baudrate=115200):
@@ -15,9 +15,16 @@ class SerialReader:
         self.baudrate = baudrate
         self.ser = serial.Serial(port, baudrate)
         self.filename = 'is_recording.tmp'
+        self.use_gpt_filename = 'use_gpt.tmp'
         self.last_message = ''
+        self.prev_print_time = 0
 
-        self.ser.flush()
+        # self.ser.flush()
+
+        while self.ser.in_waiting: # extra flush
+            print("extra flush")
+            value = self.ser.readline()            
+
 
     def start_reading(self):
         sensor_index_field = 1
@@ -31,11 +38,13 @@ class SerialReader:
             while self.ser.in_waiting:
                 value = self.ser.readline().decode('utf-8').strip()
                 
+                # print(value)
+
                 self.last_message = value
                 
                 values = value.split(" ")
 
-                if len(values)!=5:
+                if len(values)!=6:
                     continue
 
                 buttons = values[0]
@@ -76,23 +85,9 @@ class SerialReader:
                 for i in range(0,num_rows):
                     fields.append(f"B{23+i}")
                     fields.append(f"H{23+i}")
-
-                field_selector = int(values[sensor_index_field])
-                data_window.append(field_selector)
-                if len(data_window) < window_size:
-                    field_selector = sum(data_window) / len(data_window)
-                else:
-                    field_selector = savgol_filter(list(data_window), window_length=window_size, polyorder=poly_order)[-1]
-
-                print(field_selector)
-
-                field_selector = 1 - field_selector/1024
-                if field_selector>=1:
-                    field_selector = .9999            
-
-                field_index = int(field_selector * len(fields))
-
-
+                
+                field_index = int(values[5])//2 % len(fields)
+                
                 field = fields[field_index]
 
                 if field!=p_field:
@@ -119,6 +114,33 @@ class SerialReader:
                 else:
                     if os.path.exists(self.filename):
                         os.remove(self.filename)  # Delete the file
+
+                # use gpt
+                if 'L' in value:
+                    open(self.use_gpt_filename, 'w').close()  # Create the file
+                else:
+                    if os.path.exists(self.use_gpt_filename):
+                        os.remove(self.use_gpt_filename)  # Delete the file
+
+
+                if 'P' in value and time.time()-self.prev_print_time>5: # debounce 5 sec 
+                    print("PRINT")
+                    self.prev_print_time = time.time()
+                    window = gw.getWindowsWithTitle('Microsoft Excel - cyberdeck.xls')[0]
+                    filename = datetime.now().strftime("%Y-%m-%d-%H.%M.pdf")
+                    send_udp_message(json.dumps( {"action":"printToPDF", "value": filename}), "127.0.0.1", 9999)
+
+                    if window:
+                        window.activate()
+
+                    time.sleep(.1)
+                    pyautogui.write("D:\\")
+                    pyautogui.press('enter')
+                    time.sleep(.3)
+                    pyautogui.write(filename)
+                    time.sleep(.3)
+                    pyautogui.press('enter')
+
 
             time.sleep(.1)  # Prevent high CPU usage
         # except Exception as e:

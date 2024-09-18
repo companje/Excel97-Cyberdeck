@@ -51,12 +51,12 @@ def process_audio_commands():
 
         use_gpt = False
 
-        if not use_gpt:
+        if not os.path.exists('use_gpt.tmp'):
+            # if not use_gpt send transcription as cell value
             data = { "action":"setValue", "value":transcription.text }
             send_udp_message(json.dumps(data), IP, 9999)
-
         else:
-
+            # use gpt to understand transcription
             response = client.chat.completions.create(
                 model='gpt-3.5-turbo',
                 response_format={ "type": "json_object" },
@@ -64,7 +64,7 @@ def process_audio_commands():
                     {'role': 'system', 'content': 'you return commands in json format to mutate a spreadsheet. Examples: {"items": [{"action":"setValue","range":"A1","value":"1"}, {"action":"setFormula","range":"B5:D5","value":"=SUM(A:A)"}, { "action": "setBackground", "range":"A1:A5", "red":"255", "green": "255", "blue": "0" }, { "action": "setBorder", "range":"B1:B4", value:"All"}, {"action":"setColumnWidth", "range":"A:Z", "value":"20"},  { "action":"showMessage", "message": "hello world" }, {action:"setConditionalFormat",range:"selection",criteria:"<0",foregroundColor:{"red":255,"green":0,"blue":0} }, {action:"startSequencer"} ... ] }'},
                     {'role': 'user', 'content': transcription.text}
                 ],
-                temperature=0,
+                temperature=0,  
                 stream=True
             )
 
