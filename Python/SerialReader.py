@@ -18,6 +18,8 @@ class SerialReader:
         self.use_gpt_filename = 'use_gpt.tmp'
         self.last_message = ''
         self.prev_print_time = 0
+        self.prev_btw_time = 0
+        self.prev_buttons = ""
 
         # self.ser.flush()
 
@@ -36,9 +38,15 @@ class SerialReader:
         # try:
         while True:
             while self.ser.in_waiting:
-                value = self.ser.readline().decode('utf-8').strip()
                 
-                # print(value)
+                
+                try:
+                    value = self.ser.readline().decode('utf-8').strip()
+                except:
+                    print("error decoding serial data")
+                    continue
+                
+                #print(value)
 
                 self.last_message = value
                 
@@ -48,6 +56,9 @@ class SerialReader:
                     continue
 
                 buttons = values[0]
+
+                if self.prev_buttons=="":
+                    self.prev_buttons = buttons
                 
                 for i in range(1,7):
                     if str(i) in buttons:
@@ -122,27 +133,47 @@ class SerialReader:
                     if os.path.exists(self.use_gpt_filename):
                         os.remove(self.use_gpt_filename)  # Delete the file
 
-
+                # print / save a copy
                 if 'P' in value and time.time()-self.prev_print_time>5: # debounce 5 sec 
                     print("PRINT")
                     self.prev_print_time = time.time()
-                    window = gw.getWindowsWithTitle('Microsoft Excel - cyberdeck.xls')[0]
-                    filename = datetime.now().strftime("%Y-%m-%d-%H.%M.pdf")
-                    send_udp_message(json.dumps( {"action":"printToPDF", "value": filename}), "127.0.0.1", 9999)
+                    if os.path.exists("D:"):
+                        filename = datetime.now().strftime("%Y-%m-%d-%H.%M")
+                        send_udp_message(json.dumps( {"action":"saveCopyAndPrint", "value":filename + ".xls"}), "127.0.0.1", 9999)
+                        time.sleep(1)
+                        
+                        windows = gw.getWindowsWithTitle('Save Print Output As') #'Microsoft Excel - cyberdeck.xls')
+                        if len(windows)==1:
+                            windows[0].activate()
+                            time.sleep(.1)
+                            pyautogui.write("D:\\")
+                            pyautogui.press('enter')
+                            time.sleep(.3)
+                            pyautogui.write(filename + ".pdf")
+                            time.sleep(.3)
+                            pyautogui.press('enter')
+                        else:
+                            print("Save Print Output As window niet gevonden")
+                    else:
+                        send_udp_message(json.dumps( {"action":"showMessage", "message": "USB stick niet gevonden. Is deze wel ingeplugd?"}), "127.0.0.1", 9999)
 
-                    if window:
-                        window.activate()
+                #if ('k' in value or 'g' in value or 'r' in value) and time.time()-prev_btw_time>: # BTW
 
-                    time.sleep(.1)
-                    pyautogui.write("D:\\")
-                    pyautogui.press('enter')
-                    time.sleep(.3)
-                    pyautogui.write(filename)
-                    time.sleep(.3)
-                    pyautogui.press('enter')
+                for letter, nummer in zip(['k','g','r'], [0,9,21]):
+                    if letter in buttons and not letter in self.prev_buttons:
+                        send_udp_message(json.dumps( {"action":"playAudio", "value": "money.wav"}), "127.0.0.1", 9999)
+                        
+                        send_udp_message(json.dumps( {"action":"setValue", "range": "E32", "value": f"BTW {nummer}%"}), "127.0.0.1", 9999)
+        
+                        send_udp_message(json.dumps( {"action":"setFormula", "range": "H32", "value": f"=H31*{nummer}%"}), "127.0.0.1", 9999)
+                        
+                        print(nummer)
 
 
             time.sleep(.1)  # Prevent high CPU usage
+            prev_values = values
+            self.prev_buttons = buttons
+
         # except Exception as e:
         #     print(f"Serial reading error: {e}")
         # finally:
