@@ -3,7 +3,7 @@
 
 
 # connections
-![connectors](doc/connectors-1.jpg)
+![connectors](doc/connectors.jpg)
 
 # audio generation
 * sounds from the Speak & Spell toy
