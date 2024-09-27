@@ -7,6 +7,7 @@ from openai import OpenAI
 from pydub import AudioSegment
 from network_module import *
 from ConsoleWindow import *
+import whisper
 
 #IP = "192.168.1.109" # Huis
 IP = "127.0.0.1"
@@ -46,25 +47,29 @@ def process_audio_commands():
     convert_wav_to_mp3("output.wav","output.mp3")
 
     with open("output.mp3", "rb") as file:
-        transcription = client.audio.transcriptions.create(model="whisper-1", file=file)
-        print(transcription.text)
 
         use_gpt = False
 
-        if not os.path.exists('use_gpt.tmp'):
-            # if not use_gpt send transcription as cell value
-            data = { "action":"setValue", "value":transcription.text }
+        if not os.path.exists('use_gpt.tmp'): 
+             # if not use_gpt make transcription offline and send it as cell value
+            result = model.transcribe("output.mp3")
+            text = result["text"]
+            print(text)
+            data = { "action":"setValue", "value":text }
             send_udp_message(json.dumps(data), IP, 9999)
             data = { "action":"playAudio", "value": "blooip-short.wav" }
             send_udp_message(json.dumps(data), IP, 9999)
         else:
-            # use gpt to understand transcription
+            # run whisper online and use gpt to understand transcription
+            transcription = client.audio.transcriptions.create(model="whisper-1", file=file)
+            print(transcription.text)
+
             response = client.chat.completions.create(
                 model='gpt-3.5-turbo',
                 response_format={ "type": "json_object" },
                 messages=[
                     {'role': 'system', 'content': 'you return commands in json format to mutate a spreadsheet. Examples: {"items": [{"action":"setValue","range":"A1","value":"1"}, {"action":"setFormula","range":"B5:D5","value":"=SUM(A:A)"}, { "action": "setBackground", "range":"A1:A5", "red":"255", "green": "255", "blue": "0" }, { "action": "setBorder", "range":"B1:B4", value:"All"}, {"action":"setColumnWidth", "range":"A:Z", "value":"20"},  { "action":"showMessage", "message": "hello world" }, {action:"setConditionalFormat",range:"selection",criteria:"<0",foregroundColor:{"red":255,"green":0,"blue":0} }, {action:"startSequencer"} ... ] }'},
-                    {'role': 'user', 'content': transcription.text}
+                    {'role': 'user', 'content': text}
                 ],
                 temperature=0,  
                 stream=True
@@ -93,6 +98,8 @@ def process_audio_commands():
 
 
 if __name__ == "__main__":
+    model = whisper.load_model("base")  # Je kunt ook 'tiny', 'small', 'medium', 'large' gebruiken
+
     print("Cyberdeck-cli: druk op de rode knop en geef spraakcommando's")
     try:
         while True:

@@ -162,3 +162,4 @@ cython_debug/
 Python/output.mp3
 Python/output.wav
 Python/output.wav
+Python/use_gpt.tmp
