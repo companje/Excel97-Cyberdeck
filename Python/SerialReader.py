@@ -7,6 +7,9 @@ from collections import deque
 import pygetwindow as gw
 from datetime import datetime
 import pyautogui
+from ConsoleWindow import *
+
+#move_console_window(1500,400)
 
 def map_value(value, in_min, in_max, out_min, out_max, clamp=True):
     if clamp:
@@ -44,6 +47,7 @@ class SerialReader:
         p_encoder_value = -9999
         p_field = None
         p_num_rows = None
+        p_field_encoder_input = None
 
         # try:
         while True:
@@ -118,23 +122,31 @@ class SerialReader:
                         continue # check me
                 
                                 
-                fields = ["B6","B7","B8", "B9", "C13", "C14", "C15", "C16", "C17"]
-                for i in range(0,num_rows):
-                    fields.append(f"B{23+i}")
-                    fields.append(f"H{23+i}")
-                
-                field_index = len(fields)-1 - int(values[5])//2 % len(fields)
-                
-                field = fields[field_index]
-                if p_field == None:
-                    p_field = field
+                # field selection with encoder 
+                field_encoder_input = int(values[5])//2
 
-                if field!=p_field:
-                    print("field",field, p_field)
-                    data = {"action":"select","range":field}
-                    send_udp_message(json.dumps(data), "127.0.0.1", 9999)
-                    p_field = field
-                
+                if p_field_encoder_input == None:
+                    p_field_encoder_input = field_encoder_input
+
+                if field_encoder_input!=p_field_encoder_input:
+
+                    fields = ["B6","B7","B8", "B9", "C13", "C14", "C15", "C16", "C17"]
+                    for i in range(0,num_rows):
+                        fields.append(f"B{23+i}")
+                        fields.append(f"H{23+i}")
+
+                    field_index = len(fields)-1 - field_encoder_input % len(fields)
+                    
+                    field = fields[field_index]
+                    if p_field == None:
+                        p_field = field
+
+                    if field!=p_field:
+                        print("field",field, p_field)
+                        data = {"action":"select","range":field}
+                        send_udp_message(json.dumps(data), "127.0.0.1", 9999)
+                        p_field = field
+                    
                 encoder_value = int(int(values[sensor_index_encoder]) / 2) # / 2 # because step seems to be always even
                 
                 if p_encoder_value!=-9999:
@@ -147,6 +159,8 @@ class SerialReader:
                     data = {"action":"increaseValue","value":-encoder_delta}
                     send_udp_message(json.dumps(data), "127.0.0.1", 9999)
                 p_encoder_value = encoder_value
+
+                p_field_encoder_input = field_encoder_input
 
                 # audio
                 if 'T' in value:
@@ -236,10 +250,11 @@ class SerialReader:
                     if 'Y' in buttons: # only when YELLOW is down the hslider and vslider are enabled
                         send_udp_message(json.dumps({"action":"gotoColumn","value": col}), "127.0.0.1", 9999)
                     elif abs(hslider-self.prev_hslider)>1:
-                        send_udp_message(json.dumps({"action":"playAudio","value": "scroll-disabled.wav"}), "127.0.0.1", 9999)
+                        #send_udp_message(json.dumps({"action":"playAudio","value": "scroll-disabled.wav"}), "127.0.0.1", 9999)
+                        pass
 
                 # goto row
-                vslider = int(map_value(int(values[3]),0,1024,38,6))
+                vslider = int(map_value(int(values[3]),0,1024,40,1))
                 if self.prev_vslider == None:
                     self.prev_vslider = vslider
                 
@@ -247,8 +262,8 @@ class SerialReader:
                     if 'Y' in buttons: # only when YELLOW is down the hslider and vslider are enabled
                         send_udp_message(json.dumps({"action":"gotoRow","value": vslider}), "127.0.0.1", 9999)
                     elif abs(vslider-self.prev_vslider)>1:
-                        send_udp_message(json.dumps({"action":"playAudio","value": "scroll-disabled.wav"}), "127.0.0.1", 9999)
-                    
+                        #send_udp_message(json.dumps({"action":"playAudio","value": "scroll-disabled.wav"}), "127.0.0.1", 9999)
+                        pass
 
                 # this is still in the serial available loop
                 self.prev_values = values

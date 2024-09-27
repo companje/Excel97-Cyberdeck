@@ -6,7 +6,7 @@ def send_udp_message(message, ip, port):
     print(message)
 
     try:
-        print(json.dumps(json.loads(message),indent=2))
+        #print(json.dumps(json.loads(message),indent=2))
         try:
             sock.sendto(message.encode(), (ip, port))
             # print(f"Bericht verstuurd naar {ip}:{port}")

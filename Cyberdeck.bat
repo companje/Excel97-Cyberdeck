@@ -9,11 +9,11 @@ start "" "Cyberdeck Microsoft Excel.lnk"
 
 cd Python
 
-::start "SerialReader" python SerialReader.py
+start "SerialReader" python SerialReader.py
 
-::start "Cyberdeck-cli" python cyberdeck-cli.py
+start "Cyberdeck-cli" python cyberdeck-cli.py
 
 :: start "printToPDF" python printToPDF.py
 ::pause
 
-start cmd /k
+::start cmd /k
