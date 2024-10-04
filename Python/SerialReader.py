@@ -9,7 +9,7 @@ from datetime import datetime
 import pyautogui
 from ConsoleWindow import *
 
-#move_console_window(1500,400)
+# move_console_window(1500,400)
 
 def map_value(value, in_min, in_max, out_min, out_max, clamp=True):
     if clamp:
@@ -48,9 +48,13 @@ class SerialReader:
         p_field = None
         p_num_rows = None
         p_field_encoder_input = None
+        start_time = time.time()
 
         # try:
         while True:
+
+            elapsed_time = time.time()-start_time
+
             while self.ser.in_waiting:
                 
                 try:
@@ -59,7 +63,9 @@ class SerialReader:
                     print("error decoding serial data")
                     continue
                 
-                #print(value)
+                ignore_time = 7
+                if elapsed_time<ignore_time:
+                    continue
 
                 self.last_message = value
                 
@@ -170,9 +176,13 @@ class SerialReader:
                         os.remove(self.filename)  # Delete the file
 
                 # use gpt
-                if 'L' in value:
+                if 'L' in buttons and 'L' not in self.prev_buttons:
                     open(self.use_gpt_filename, 'w').close()  # Create the file
-                else:
+                    print("online")
+                    play("online")
+                elif 'L' in self.prev_buttons and 'L' not in buttons:
+                    print("offline")
+                    play("offline")
                     if os.path.exists(self.use_gpt_filename):
                         os.remove(self.use_gpt_filename)  # Delete the file
 
@@ -196,9 +206,10 @@ class SerialReader:
                             time.sleep(.3)
                             pyautogui.press('enter')
                         else:
+                            play("error")
                             print("Save Print Output As window niet gevonden")
                     else:
-                        send_udp_message(json.dumps( {"action":"playAudio", "value": "usb-drive-not-found.wav"}), "127.0.0.1", 9999)
+                        play("usb-drive-not-found")
 
                 # BTW
                 for letter, nummer in zip(['k','g','r'], [0,9,21]):
@@ -215,7 +226,7 @@ class SerialReader:
                 if 'R' in buttons and 'R' not in self.prev_buttons:
                     print("buttons, self.prev_buttons", buttons, self.prev_buttons)
                     send_udp_message(json.dumps( {"action":"clear" }), "127.0.0.1", 9999)
-                    play("feel")
+                    play("cleared")
             
                 # green happy button
                 if 'G' in buttons and 'G' not in self.prev_buttons:
