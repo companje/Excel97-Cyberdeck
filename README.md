@@ -27,7 +27,7 @@ The **Microsoft Excel 1997 Cyberdeck** is a one-of-a-kind project created by me 
 
 ![Excel97-Cyberdeck](https://github.com/user-attachments/assets/00e298ec-89fb-430c-ac6f-e1f87c7dddb2)
 
-## Online and Offline Modes
+## Internet Kill Switch
 
 ### Offline Mode
 When offline, the Cyberdeck utilizes a local instance of OpenAI Whisper for speech-to-text transcription. You can dictate simple commands such as:
@@ -63,7 +63,7 @@ A detailed [materials list](./materials.pdf) is included in this repository for 
 The Cyberdeck software integrates Arduino firmware, Python scripts, and VBA macros to bridge the gap between hardware and Microsoft Excel 1997.
 
 ### Arduino Firmware
-The Arduino MEGA handles input from all sensors and sends the data over serial communication.
+The [Arduino Firmware](Arduino/Cyberdeck.ino) handles input from all sensors connected to the MEGA and sends the data over serial communication.
 
 - Example: Reading input from buttons and sliders**
 ```cpp
@@ -75,9 +75,7 @@ Serial.print(" ");
 Serial.print(analogRead(POT));
 Serial.print(" ");
 Serial.print(analogRead(H_SLIDER));
-Serial.print(" ");
-Serial.print(analogRead(V_SLIDER));
-Serial.println();
+//...
 ```
 
 - Sleep mode and talk lamp brightness control:
@@ -93,7 +91,7 @@ analogWrite(LAMP_TALK, brightness);
 
 ### Python Scripts
 ####  SerialReader.py
-This script processes data from the Arduino and communicates with Excel via UDP sockets.
+This script ([SerialReader.py](Python/SerialReader.py)) processes data from the Arduino and communicates with Excel via UDP sockets.
 
 - Field navigation using the rotary encoder:
 
@@ -104,7 +102,6 @@ send_udp_message(json.dumps(data), "127.0.0.1", 9999)
 ```
 
 -  Audio feedback for printing invoices:
-
 ```python
 if 'P' in value:
     filename = datetime.now().strftime("%Y-%m-%d-%H.%M.%S")
@@ -113,19 +110,21 @@ if 'P' in value:
 ```
 
 #### Cyberdeck-cli.py
-This script manages audio input and integrates Whisper and ChatGPT functionality.
+This script ([Cyberdeck-cli.py](Python/Cyberdeck-cli.py)) manages audio input and integrates Whisper and ChatGPT functionality.
 
-- Offline transcription with Whisper:
+- Offline transcription with local Whisper:
 
 ```python
 result = model.transcribe("output.mp3")
 text = result["text"].strip()
 data = { "action": "setValue", "value": text }
 send_udp_message(json.dumps(data), IP, 9999)
-Online natural language commands with ChatGPT:
 ```
 
+- Online transcription (online Whisper) and natural language commands (ChatGPT):
 ```python
+transcription = client.audio.transcriptions.create(model="whisper-1", file=file)
+text = transcription.text
 response = client.chat.completions.create(
     model='gpt-3.5-turbo',
     messages=[
@@ -138,7 +137,7 @@ response = client.chat.completions.create(
 ```
 
 ### VBA scripts in Excel 97
-The VBA code processes JSON commands from Python to execute actions within Excel.
+The VBA code (see [cyberdeck.xls](Excel/cyberdeck.xls)) processes JSON commands from Python to execute actions within Excel.
 
 - Execute basic actions:
 
@@ -177,11 +176,11 @@ End If
  2. Upload Firmware:
      - Use the Arduino IDE to upload the firmware to the Arduino MEGA.
  3. Configure Software:
-     - Install required Python packages using pip install -r requirements.txt.
-     - Load the VBA macros into Excel.
+     - Install required Python packages using `pip install -r requirements.txt`.
+     - Load the VBA macros into Excel. You might need to change security settings in your Registry to enable ActiveX components like Winsock. See [Various notes](#various-notes)
  4. Launch the Cyberdeck:
-     - Start SerialReader.py to process input from the Arduino.
-     - Run Cyberdeck-cli.py for audio input and LLM processing.
+     - Start [SerialReader.py](Python/SerialReader.py) to process input from the Arduino.
+     - Run [Cyberdeck-cli.py](Python/Cyberdeck-cli.py) for audio input and optional LLM processing.
 
 ---
 
@@ -197,9 +196,8 @@ This project is open-source, and contributions are welcome! Feel free to submit 
 ---
 
 ## Various notes
-### audio generation
-* sounds from the Speak & Spell toy
-* sound produced with `say` command in MacOS.
+* [sound](Excel/audio) from the Speak & Spell toy.
+* [sound](Excel/audio) produced with `say` command in MacOS.
 ```bash
 say -v Zarvox "Welcome to the SETUP Utrecht  Microsoft Excel 97 CYBERDECK........[[rate 50]]enjoy your time[[rate 100]].......ha-ha-ha" -o welcome.aiff
 ```
@@ -207,3 +205,84 @@ say -v Zarvox "Welcome to the SETUP Utrecht  Microsoft Excel 97 CYBERDECK.......
 ```bash
 ffmpeg -i saved2.aiff -filter:a "volume=2.0" /Volumes/Cyberdeck/github-repo/Excel/audio/saved2.wav -y
 ```
+* Clean Up the WinSxS Folder: Dism.exe /online /Cleanup-Image /StartComponentCleanup		 
+* archive.org has ISO files of the original [Office 97]([url](https://archive.org/details/microsoft-office-97-professional_202112)) in case you discarded your original CD-ROM. You will still need your license key though.
+* I tried many different systems and OS'es and emulators: MacOS, Windows 7, Ubuntu, Lubuntu, Raspberry Pi OS. Emulators: Wine, QEMU. Most platforms failed in one way or another. Ultimately I used Windows 10 in Windows XP Compatibility Mode running on an [Fanless Intel 7th Gen Core i5 Mini PC](doc/Fanless Intel 7th Gen Core i5 Mini PC.pdf).
+* We have been thinking about selecting and mixing colors with these playful buttons. The buttons made it into the Cyberdeck but not for colormixing.
+![Cyberdeck-colormixer1 copy](https://github.com/user-attachments/assets/314872b6-322d-4c3e-b4b0-58416a22e375)
+* you will need to enter the Winsock Control 6.0 license key in REGEDIT
+```
+HKEY_CLASSES_ROOT\Licenses\2c49f800-c2dd-11cf-9ad6-0080c7e7b78d = mlrljgrlhltlngjlthrligklpkrhllglqlrk
+```
+* you need to register the MSWinsck.OCX component:
+```
+Regsvr32.exe C:\Windows\SYSWOW64\MSwinsck.ocx
+```
+* You need to turn off the 'killbit' in the Windows Registry for Winsock. Make sure the following key is not set to value 0x400. I think it should be 0 to work.
+```
+{248DD896-BB45-11CF-9ABC-0080C7E7B78D}
+```
+* there is also a Joystick port! In the end we didn't use it. But it can still be accessed:
+```cpp
+const int pins[] = { 2, 3, 4, 5, 6 };
+const char onDown[] = { 'a', 'b', 'c', 'd', 'e' };
+const char onUp[] = { 'A', 'B', 'C', 'D', 'E' };
+bool buttonState[sizeof(pins) / sizeof(pins[0])] = {0};
+
+void setup() {
+  Serial.begin(9600);
+  for (int i = 0; i < sizeof(pins) / sizeof(pins[0]); i++) {
+    pinMode(pins[i], INPUT_PULLUP);
+  }
+}
+
+void loop() {
+  for (int i = 0; i < sizeof(pins) / sizeof(pins[0]); i++) {
+    bool currentState = digitalRead(pins[i]) == LOW;
+    if (currentState != buttonState[i]) {
+      buttonState[i] = currentState;
+      if (currentState) {
+        Serial.write(onDown[i]);
+      } else {
+        Serial.write(onUp[i]);
+      }
+    }
+  }
+  delay(16);
+}
+```
+* Here is info about the Microsoft Clippy annimations you can trigger in Excel: https://learn.microsoft.com/en-us/previous-versions/office/developer/office-2003/aa210131(v=office.11)#example
+```vba
+With Assistant
+    .On = True
+    .Visible = True
+    .Move xLeft:= 400, yTop:= 300
+    .MoveWhenInTheWay = True
+    .TipOfDay = True
+    .Animation = msoAnimationGreeting
+End With
+```
+* I'm using a really nice python library ([ijson](https://pypi.org/project/ijson/) for parsing JSON that is streamed by ChatGPT. The library checks if new finished JSON objects have arrived:
+```python
+events = ijson.sendable_list()
+coro = ijson.items_coro(events, "items.item")
+seen_events = set()
+
+for chunk in response:
+    msg = chunk.choices[0].delta.content
+
+    if msg:
+        coro.send(msg.encode("utf-8"))
+    
+    if events:
+        unseen_events = [e for e in events if json.dumps(e) not in seen_events]
+        if unseen_events:
+            for event in unseen_events:
+                seen_events.add(json.dumps(event))
+                print(json.dumps(event))
+                send_udp_message(json.dumps(event), IP, 9999)
+```
+* to prevent the use of multiple 'threads' in python my [SerialReader](Python/SerialReader.py) script writes a file to disk called `is_recording.tmp` and removes it when the push-to-talk button is released. The other script ([cyberdeck-cli.py](Python/cyberdeck-cli.py)) checks the existence of this file and processes it when finished.
+
+## Quote about the Cyberdeck (Dutch)
+"Het is een cyberdeck, een computer die maar 1 ding kan maar daar dan wel heel goed in is. Maar het is wel met een knipoog. Want met dit cyberdeck kun je een oude versie van Microsoft Excel gebruiken. En dan ook nog eens zonder toetsenbord en muis. Met allemaal draaiknoppen en andere gekke bediening. En met spraakbesturing. Je kunt dus echt praten tegen het apparaat en bijv zeggen dat je een factuur wilt opstellen of je administratie wilt doen. En dan gaat ie je helpen."
