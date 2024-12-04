@@ -17,11 +17,11 @@ The **Microsoft Excel 1997 Cyberdeck** is a one-of-a-kind project created by me 
   - **Rotary encoders**: Adjust numeric values in cells or switch between pre-selected cells.
   - **Sliders**: Scroll horizontally and vertically between spreadsheet fields.
   - **Buttons**: Includes an online/offline switch for the LLM (Large Language Model) functionality and a dedicated print button.
-- **Audio feedback**: Audio cues, including synthesized and sampled retro sounds, guide users through tasks.
+- **Audio**: Audio cues, including synthesized and sampled retro sounds, guide users through tasks.
   - Examples include spoken feedback for online/offline switching or saving an invoice.
 - **Visual output**:
-  - A **1440x1440 square touchscreen** for navigation and display.
-  - A **720x720 display** embedded in a vintage Halina Diaviewer, magnified and distorted through a lens.
+  - A **1440x1440** square touchscreen for navigation and display.
+  - A **720x720** display embedded in a vintage Halina Diaviewer, magnified and distorted through a lens.
 
 ---
 
