@@ -310,3 +310,26 @@ sudo --preserve-env ./cyberdeck-cli.py
 - software die steeds complexer wordt, meer functies krijgt maar van je eigenlijk zou kunnen zeggen dat het niet perse nuttiger of beter wordt. Alleen logger, zwaarder en ingewikkelder.
 - Ik wil daarom kijken of ik een apparaat kan maken dat als enige doel heeft om zo fijn mogelijk en op zonder afhankelijkheden van internet de ultieme versie van Excel te gebruiken 
 - "Het is een cyberdeck, een computer die maar 1 ding kan maar daar dan wel heel goed in is. Maar het is wel met een knipoog. Want met dit cyberdeck kun je een oude versie van Microsoft Excel gebruiken. En dan ook nog eens zonder toetsenbord en muis. Met allemaal draaiknoppen en andere gekke bediening. En met spraakbesturing. Je kunt dus echt praten tegen het apparaat en bijv zeggen dat je een factuur wilt opstellen of je administratie wilt doen. En dan gaat ie je helpen."
+
+# Culture & History
+* Microsoft Excel Introduction 1990 commercial: https://www.youtube.com/watch?v=kOO31qFmi9A
+![excel-introduction-1990](https://github.com/user-attachments/assets/59b153db-26f4-408f-8d65-effda369d423)
+
+* predecessors of Excel 97
+ ![excel97-predecessors](https://github.com/user-attachments/assets/db5cf1df-0fea-4f51-ab1a-bb34b798346d)
+
+# Sketching with Dall-E for an Excel 97 Cyberdeck
+![Screenshot 2024-12-04 at 17 38 16](https://github.com/user-attachments/assets/7195dbd7-1400-4247-a062-60f6237394de)
+
+# Parts from my own collection
+![Screenshot 2024-12-04 at 17 28 23](https://github.com/user-attachments/assets/845e610b-1478-49d4-8067-7181d1971b30)
+![Screenshot 2024-12-04 at 17 28 28](https://github.com/user-attachments/assets/75758821-5efd-449a-bb92-d0f4ea9b1764)
+![Screenshot 2024-12-04 at 17 28 33](https://github.com/user-attachments/assets/8a1b9f69-2484-4461-ac3e-fae0e6cfc198)
+
+# The Green Van - where it happened
+![IMG_4761](https://github.com/user-attachments/assets/78cebdae-e172-4635-a22f-134140afcd35)
+![groene bus](https://github.com/user-attachments/assets/b69f4891-26c7-4f9e-a40a-16e80854ff08)
+
+# Various images
+![IMG_6067 copy](https://github.com/user-attachments/assets/6d83729f-f7f9-430f-8f15-08062afb8f27)
+![Screenshot 2024-12-04 at 17 44 29](https://github.com/user-attachments/assets/73327c41-dfbc-413f-a80e-034fe5c27243)
