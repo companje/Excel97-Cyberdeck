@@ -330,7 +330,7 @@ sudo --preserve-env ./cyberdeck-cli.py
 * predecessors of Excel 97
  ![excel97-predecessors](https://github.com/user-attachments/assets/db5cf1df-0fea-4f51-ab1a-bb34b798346d)
 
-# Sketching with Dall-E for an Excel 97 Cyberdeck
+# Sketching with Dall-E for the Excel 97 Cyberdeck
 ![Screenshot 2024-12-04 at 17 38 16](https://github.com/user-attachments/assets/7195dbd7-1400-4247-a062-60f6237394de)
 
 # Parts from my own collection
