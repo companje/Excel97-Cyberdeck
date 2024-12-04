@@ -201,12 +201,12 @@ This project is open-source, and contributions are welcome! Feel free to submit 
 ```bash
 say -v Zarvox "Welcome to the SETUP Utrecht  Microsoft Excel 97 CYBERDECK........[[rate 50]]enjoy your time[[rate 100]].......ha-ha-ha" -o welcome.aiff
 ```
-* convert
+* convert aiif to wav using ffmpeg while inreasing the volume
 ```bash
 ffmpeg -i saved2.aiff -filter:a "volume=2.0" /Volumes/Cyberdeck/github-repo/Excel/audio/saved2.wav -y
 ```
-* Clean Up the WinSxS Folder: Dism.exe /online /Cleanup-Image /StartComponentCleanup		 
-* archive.org has ISO files of the original [Office 97]([url](https://archive.org/details/microsoft-office-97-professional_202112)) in case you discarded your original CD-ROM. You will still need your license key though.
+* Clean Up the WinSxS Folder: ```Dism.exe /online /Cleanup-Image /StartComponentCleanup```	 
+* archive.org has ISO files of the original [Office 97](https://archive.org/details/microsoft-office-97-professional_202112) in case you discarded your original CD-ROM. You will still need your license key though.
 * I tried many different systems and OS'es and emulators: MacOS, Windows 7, Ubuntu, Lubuntu, Raspberry Pi OS. Emulators: Wine, QEMU. Most platforms failed in one way or another. Ultimately I used Windows 10 in Windows XP Compatibility Mode running on an [Fanless Intel 7th Gen Core i5 Mini PC](doc/Fanless Intel 7th Gen Core i5 Mini PC.pdf).
 * We have been thinking about selecting and mixing colors with these playful buttons. The buttons made it into the Cyberdeck but not for colormixing.
 ![Cyberdeck-colormixer1 copy](https://github.com/user-attachments/assets/314872b6-322d-4c3e-b4b0-58416a22e375)
@@ -284,5 +284,5 @@ for chunk in response:
 ```
 * to prevent the use of multiple 'threads' in python my [SerialReader](Python/SerialReader.py) script writes a file to disk called `is_recording.tmp` and removes it when the push-to-talk button is released. The other script ([cyberdeck-cli.py](Python/cyberdeck-cli.py)) checks the existence of this file and processes it when finished.
 
-## Quote about the Cyberdeck (Dutch)
+## Dutch quote explanating the Cyberdeck
 "Het is een cyberdeck, een computer die maar 1 ding kan maar daar dan wel heel goed in is. Maar het is wel met een knipoog. Want met dit cyberdeck kun je een oude versie van Microsoft Excel gebruiken. En dan ook nog eens zonder toetsenbord en muis. Met allemaal draaiknoppen en andere gekke bediening. En met spraakbesturing. Je kunt dus echt praten tegen het apparaat en bijv zeggen dat je een factuur wilt opstellen of je administratie wilt doen. En dan gaat ie je helpen."
