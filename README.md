@@ -137,7 +137,7 @@ response = client.chat.completions.create(
 )
 ```
 
-### VBA Macros in Excel
+### VBA scripts in Excel 97
 The VBA code processes JSON commands from Python to execute actions within Excel.
 
 - Execute basic actions:
