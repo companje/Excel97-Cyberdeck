@@ -53,7 +53,7 @@ The Cyberdeck combines a **retro aluminum casing** from the 1970s, a vintage int
 - **Output**: Dual displays and audio feedback for a tactile and engaging user experience.
 - **Connections**: Arduino MEGA for sensor management and serial communication.
 
-A detailed [materials list](./materials.pdf) is included in this repository for a complete breakdown of the hardware.
+A detailed [materials list](docs/Excel%2097%20Cyberdeck%20materialen.pdf) is included in this repository for a complete breakdown of the hardware.
 
 ![connectors](doc/connectors.jpg)
 
