@@ -256,7 +256,7 @@ void loop() {
   delay(16);
 }
 ```
-* Here is info about the Microsoft Clippy annimations you can trigger in Excel: https://learn.microsoft.com/en-us/previous-versions/office/developer/office-2003/aa210131(v=office.11)#example
+* [Here](https://learn.microsoft.com/en-us/previous-versions/office/developer/office-2003/aa210131(v=office.11)#example) is info about the Microsoft Clippy annimations you can trigger in Excel. Clippy didn't make it into final version of the Cyberdeck.
 ```vba
 With Assistant
     .On = True
@@ -267,6 +267,8 @@ With Assistant
     .Animation = msoAnimationGreeting
 End With
 ```
+![Excel97-Cyberdeck-Clippy copy](https://github.com/user-attachments/assets/99ad2072-c6aa-4ac0-9b40-c089b34b0125)
+
 * I'm using a really nice python library ([ijson](https://pypi.org/project/ijson/) for parsing JSON that is streamed by ChatGPT. The library checks if new finished JSON objects have arrived:
 ```python
 events = ijson.sendable_list()
