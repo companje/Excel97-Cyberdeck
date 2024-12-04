@@ -194,6 +194,7 @@ End If
 ## Contributions
 This project is open-source, and contributions are welcome! Feel free to submit pull requests, report issues, or share your ideas for improvement.
 
+---
 
 ## Various notes
 ### audio generation
