@@ -207,8 +207,8 @@ ffmpeg -i saved2.aiff -filter:a "volume=2.0" /Volumes/Cyberdeck/github-repo/Exce
 ```
 * Clean Up the WinSxS Folder: ```Dism.exe /online /Cleanup-Image /StartComponentCleanup```	 
 * archive.org has ISO files of the original [Office 97](https://archive.org/details/microsoft-office-97-professional_202112) in case you discarded your original CD-ROM. You will still need your license key though.
-* I tried many different systems and OS'es and emulators: MacOS, Windows 7, Ubuntu, Lubuntu, Raspberry Pi OS. Emulators: Wine, QEMU. Most platforms failed in one way or another. Ultimately I used Windows 10 in Windows XP Compatibility Mode running on an [Fanless Intel 7th Gen Core i5 Mini PC](doc/Fanless Intel 7th Gen Core i5 Mini PC.pdf).
-* We have been thinking about selecting and mixing colors with these playful buttons. The buttons made it into the Cyberdeck but not for colormixing.
+* I tried many different systems and OS'es and emulators: MacOS, Windows 7, Ubuntu, Lubuntu, Raspberry Pi OS. Emulators: [Wine](https://www.winehq.org/), [QEMU](https://www.qemu.org/). Most platforms failed in one way or another. Ultimately I used Windows 10 in Windows XP Compatibility Mode running on an [Fanless Intel 7th Gen Core i5 Mini PC](doc/Fanless%20Intel%207th%20Gen%20Core%20i5%20Mini%20PC.pdf).
+* I have been thinking about selecting and mixing colors with these playful buttons. The buttons made it into the Cyberdeck but not for colormixing.
 ![Cyberdeck-colormixer1 copy](https://github.com/user-attachments/assets/314872b6-322d-4c3e-b4b0-58416a22e375)
 * you will need to enter the Winsock Control 6.0 license key in REGEDIT
 ```
@@ -221,6 +221,11 @@ Regsvr32.exe C:\Windows\SYSWOW64\MSwinsck.ocx
 * You need to turn off the 'killbit' in the Windows Registry for Winsock. Make sure the following key is not set to value 0x400. I think it should be 0 to work.
 ```
 {248DD896-BB45-11CF-9ABC-0080C7E7B78D}
+```
+* I think you also need `MSCOMM32.OCX`. Put 32-bit OCXs go into the `/Windows/SysWOW64` folder. Put 64-bit OCXs into the `/Windows/System32` folder. Followed by `regsvr32 mscomm32.ocx`. License for this OCX is:
+```
+[HKEY_CLASSES_ROOT\Licenses\4250E830-6AC2-11cf-8ADB-00AA00C00905]
+@="kjljvjjjoquqmjjjvpqqkqmqykypoqjquoun"
 ```
 * there is also a Joystick port! In the end we didn't use it. But it can still be accessed:
 ```cpp
@@ -283,6 +288,26 @@ for chunk in response:
                 send_udp_message(json.dumps(event), IP, 9999)
 ```
 * to prevent the use of multiple 'threads' in python my [SerialReader](Python/SerialReader.py) script writes a file to disk called `is_recording.tmp` and removes it when the push-to-talk button is released. The other script ([cyberdeck-cli.py](Python/cyberdeck-cli.py)) checks the existence of this file and processes it when finished.
+
+* Advanced commands:
+- "zoek in kolom M naar een waarde die in A1 genoemd wordt. Geef vervolgens de waarde in de cell er rechts naast (in kolom N)  terug en stop het resultaat in E1" (this is not possible since there's no way yet to send the value in A1 to the LLM)
+- "set numberformat voor d2:d5 naar currency met  twee cijfers achter de comma en met duizendtal seperator"
+- "set numberformat voor d2:d5 naar currency zonder valuta symbool, twee cijfers achter de comma en met duizendtal seperator"
+
+* if you want to run a script but preserve the env variables (containing your API key for example):
+```bash
+sudo --preserve-env ./cyberdeck-cli.py
+```
+* Cyberdeck Cafe community op Discord - https://cyberdeck.cafe/
+
+# Starting points (Dutch)
+- computer hardware raakt snel verouderd omdat de software steeds zwaarder en ingewikkelder word maar niet perse nuttiger of makkelijker. Daarnaast zijn we steeds afhankelijker van internet en clouddiensten.
+- Oude computers zijn vaak nog heel goed te hergebruiken wanneer je ze ombouwt naar een 'single purpose device': Een comptuter die maar één ding kan, maar daar wel heel goed in is.
+- Samen met SETUP in Utrecht (platform voor een technologie-kritische samenleving) ga ik onderzoeken of ik een CYBERDECK kan maken voor Excel 97. De versie van Excel die eigenlijk gewoon 'af' was...
+|
+- oude, goedkope, afgeschreven apparatuur opnieuw gebruiken / recyclen door deze om te bouwen tot een 'single purpose device', iets wat alleen maar goed is in 1 ding.
+- software die steeds complexer wordt, meer functies krijgt maar van je eigenlijk zou kunnen zeggen dat het niet perse nuttiger of beter wordt. Alleen logger, zwaarder en ingewikkelder.
+- Ik wil daarom kijken of ik een apparaat kan maken dat als enige doel heeft om zo fijn mogelijk en op zonder afhankelijkheden van internet de ultieme versie van Excel te gebruiken 
 
 ## Dutch quote explanating the Cyberdeck
 "Het is een cyberdeck, een computer die maar 1 ding kan maar daar dan wel heel goed in is. Maar het is wel met een knipoog. Want met dit cyberdeck kun je een oude versie van Microsoft Excel gebruiken. En dan ook nog eens zonder toetsenbord en muis. Met allemaal draaiknoppen en andere gekke bediening. En met spraakbesturing. Je kunt dus echt praten tegen het apparaat en bijv zeggen dat je een factuur wilt opstellen of je administratie wilt doen. En dan gaat ie je helpen."
