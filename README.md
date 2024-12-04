@@ -1,6 +1,5 @@
 # Cyberdeck
- 
-
+![Excel 97 Cyberdeck](https://github.com/user-attachments/assets/e3d9fc83-c935-4c45-876b-3a01131ddaea)
 
 # connections
 ![connectors](doc/connectors.jpg)
