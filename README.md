@@ -65,8 +65,11 @@ The Cyberdeck software integrates Arduino firmware, Python scripts, and VBA macr
 ### Arduino Firmware
 The [Arduino Firmware](Arduino/Cyberdeck.ino) handles input from all sensors connected to the MEGA and sends the data over serial communication.
 
-- Example: Reading input from buttons and sliders**
+- Example: Reading input from buttons and sliders
 ```cpp
+Encoder wheel2(36,38); //field selector
+Button* all_buttons[] = { &btn_1, &btn_2, &btn_3, &btn_4, &btn_5, &btn_6, &btn_black, &btn_green, &btn_red, &clr_red, &clr_green, &clr_blue, &clr_yellow, &clr_black, &clr_white, &btn_talk, &btn_yellow_print, &btn_red_llm };
+//...
 for (int i = 0; i < nButtons; i++) {
   (*all_buttons[i]).pressed = !digitalRead((*all_buttons[i]).pin);
   Serial.print((*all_buttons[i]).pressed ? (*all_buttons[i]).name : '.');
