@@ -307,6 +307,4 @@ sudo --preserve-env ./cyberdeck-cli.py
 - oude, goedkope, afgeschreven apparatuur opnieuw gebruiken / recyclen door deze om te bouwen tot een 'single purpose device', iets wat alleen maar goed is in 1 ding.
 - software die steeds complexer wordt, meer functies krijgt maar van je eigenlijk zou kunnen zeggen dat het niet perse nuttiger of beter wordt. Alleen logger, zwaarder en ingewikkelder.
 - Ik wil daarom kijken of ik een apparaat kan maken dat als enige doel heeft om zo fijn mogelijk en op zonder afhankelijkheden van internet de ultieme versie van Excel te gebruiken 
-
-## Dutch quote explanating the Cyberdeck
-"Het is een cyberdeck, een computer die maar 1 ding kan maar daar dan wel heel goed in is. Maar het is wel met een knipoog. Want met dit cyberdeck kun je een oude versie van Microsoft Excel gebruiken. En dan ook nog eens zonder toetsenbord en muis. Met allemaal draaiknoppen en andere gekke bediening. En met spraakbesturing. Je kunt dus echt praten tegen het apparaat en bijv zeggen dat je een factuur wilt opstellen of je administratie wilt doen. En dan gaat ie je helpen."
+- "Het is een cyberdeck, een computer die maar 1 ding kan maar daar dan wel heel goed in is. Maar het is wel met een knipoog. Want met dit cyberdeck kun je een oude versie van Microsoft Excel gebruiken. En dan ook nog eens zonder toetsenbord en muis. Met allemaal draaiknoppen en andere gekke bediening. En met spraakbesturing. Je kunt dus echt praten tegen het apparaat en bijv zeggen dat je een factuur wilt opstellen of je administratie wilt doen. En dan gaat ie je helpen."
