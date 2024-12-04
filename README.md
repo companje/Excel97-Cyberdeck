@@ -150,13 +150,46 @@ response = client.chat.completions.create(
 ### VBA scripts in Excel 97
 The VBA code (see [cyberdeck.xls](Excel/cyberdeck.xls)) processes JSON commands from Python to execute actions within Excel.
 
+- initialization
+```vba
+Option Explicit
+Dim myWinsock As WinsockHandler
+Set myWinsock = New WinsockHandler
+PlayWavFile "welcome.wav"
+Public WithEvents udp As Winsock
+Dim regex As Object
+Dim ws As Worksheet
+
+Private Sub Class_Initialize()
+    Set udp = New Winsock
+    udp.LocalPort = 0
+    udp.Protocol = sckUDPProtocol
+    udp.Bind 9999
+End Sub
+```
+
 - Execute basic actions:
 
 ```vba
-If action = "setValue" Then
-    rng.value = value
+'...
 ElseIf action = "increaseValue" Then
-    rng.value = rng.value + value
+    If rng.Count = 1 And IsNumeric(rng.value) Then
+        rng.value = rng.value + value
+        PlayWavFile "blonk-short.wav"
+    End If
+ElseIf action = "stopAudio" Then
+    StopAudio
+ElseIf action = "gotoColumn" Then
+    Cells(ActiveCell.Row, value).Select
+    PlayWavFile "blooip-short.wav"
+ElseIf action = "saveCopyAndPrint" Then
+    Dim filename
+    filename = "D:\" & Trim(value)
+    On Error Resume Next
+    ws.PrintOut PrintToFile:=True
+    On Error GoTo 0
+    PlayWavFile "saved2.wav"
+    ThisWorkbook.SaveCopyAs filename
 End If
 ```
 
