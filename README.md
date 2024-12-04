@@ -43,6 +43,10 @@ In online mode, activated by the LLM flip switch, the Cyberdeck connects to Open
 
 ChatGPT interprets these commands and generates JSON instructions for seamless execution in Excel.
 
+--- 
+
+![IMG_7628](https://github.com/user-attachments/assets/ad182407-8328-42cd-a3c6-b24342412ebb)
+
 ---
 
 ## Technical Details
@@ -56,6 +60,10 @@ The Cyberdeck combines a **retro aluminum casing** from the 1970s, a vintage int
 A detailed [materials list](doc/Excel%2097%20Cyberdeck%20materialen.pdf) is included in this repository for a complete breakdown of the hardware.
 
 ![connectors](doc/connectors.jpg)
+
+---
+
+![IMG_7594](https://github.com/user-attachments/assets/cb2b2fce-3b11-4811-9a81-d16afce4577f)
 
 ---
 
