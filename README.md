@@ -36,7 +36,7 @@ When offline, the Cyberdeck utilizes a local instance of OpenAI Whisper for spee
 - "Clear the contents of column B."
 
 ### Online Mode
-In online mode, activated by the red LLM button, the Cyberdeck connects to OpenAI's ChatGPT 3.5 via API. This unlocks powerful natural language capabilities, allowing users to describe complex actions, such as:
+In online mode, activated by the LLM flip switch, the Cyberdeck connects to OpenAI's ChatGPT 3.5 via API. This unlocks powerful natural language capabilities, allowing users to describe complex actions, such as:
 
 - "Set the background of cells A5:F15 to yellow with a dashed border."
 - "Generate a list of 15 random cities in the Netherlands in column E."
