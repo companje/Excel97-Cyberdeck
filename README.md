@@ -190,12 +190,7 @@ ElseIf action = "saveCopyAndPrint" Then
     On Error GoTo 0
     PlayWavFile "saved2.wav"
     ThisWorkbook.SaveCopyAs filename
-End If
-```
-
-- Cell formatting:
-```vba
-If action = "setBackground" Then
+ElseIf action = "setBackground" Then
     rng.Interior.color = RGB(msg("obj.red"), msg("obj.green"), msg("obj.blue"))
 End If
 ```
