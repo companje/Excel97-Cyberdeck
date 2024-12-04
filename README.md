@@ -209,7 +209,8 @@ ffmpeg -i saved2.aiff -filter:a "volume=2.0" /Volumes/Cyberdeck/github-repo/Exce
 * archive.org has ISO files of the original [Office 97](https://archive.org/details/microsoft-office-97-professional_202112) in case you discarded your original CD-ROM. You will still need your license key though.
 * I tried many different systems and OS'es and emulators: MacOS, Windows 7, Ubuntu, Lubuntu, Raspberry Pi OS. Emulators: [Wine](https://www.winehq.org/), [QEMU](https://www.qemu.org/). Most platforms failed in one way or another. Ultimately I used Windows 10 in Windows XP Compatibility Mode running on an [Fanless Intel 7th Gen Core i5 Mini PC](doc/Fanless%20Intel%207th%20Gen%20Core%20i5%20Mini%20PC.pdf).
 * I have been thinking about selecting and mixing colors with these playful buttons. The buttons made it into the Cyberdeck but not for colormixing.
-![Cyberdeck-colormixer1 copy](https://github.com/user-attachments/assets/314872b6-322d-4c3e-b4b0-58416a22e375)
+![Screenshot 2024-12-04 at 17 47 04](https://github.com/user-attachments/assets/92e8c073-4e3a-4828-b2a8-eba913c134e1)
+
 * you will need to enter the Winsock Control 6.0 license key in REGEDIT
 ```
 HKEY_CLASSES_ROOT\Licenses\2c49f800-c2dd-11cf-9ad6-0080c7e7b78d = mlrljgrlhltlngjlthrligklpkrhllglqlrk
