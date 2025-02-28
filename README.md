@@ -1,7 +1,7 @@
 # Excel 97 Cyberdeck
 ![Microsoft Excel 1997 Cyberdeck](https://github.com/user-attachments/assets/54127bf0-03a0-4611-bc85-48a0d74e7727)
 
-The **Microsoft Excel 1997 Cyberdeck** is a one-of-a-kind project created by me Rick Companje for **Stichting SETUP** as part of their *Old Timer Tech* research initiative. This Cyberdeck combines retro hardware, innovative software, and cyberpunk aesthetics to deliver a fully functional, portable device for spreadsheet management without traditional input devices like a keyboard or mouse. It offers a fresh perspective on how we can creatively engage with old technology in new ways.
+The **Microsoft Excel 1997 Cyberdeck** is a one-of-a-kind project created by me Rick Companje for **Stichting SETUP** as part of their *Old Timer Tech* research initiative. This Cyberdeck combines retro hardware, innovative software, and cyberpunk aesthetics to deliver a fully functional, portable device for spreadsheet management without traditional input devices like a keyboard or mouse. It offers a fresh perspective on how we can creatively engage with old technology in new ways. An experiment in efficiency.
 
 ---
 
